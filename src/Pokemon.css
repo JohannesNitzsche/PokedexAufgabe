@@ -1,0 +1,41 @@
+.pokemon {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+}
+
+.id {
+  display: grid;
+  place-items: center;
+  width: 5%;
+  border: 1px solid black;
+}
+
+.sprite {
+  border: 1px solid black;
+}
+
+.name {
+  border: 1px solid black;
+  display: grid;
+  place-items: center;
+  flex: 1;
+}
+
+.typeContainer {
+  border: 1px solid black;
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  vertical-align: middle;
+  height: 100%;
+}
+
+.type {
+  width: auto;
+  height: auto;
+  max-height: 50%;
+  max-width: 50%;
+}
