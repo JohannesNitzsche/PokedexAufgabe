@@ -19,13 +19,15 @@ export const Pokemon = function (num) {
       .then((data) => {
         setSpecies(capitalize(data.name));
         setSprite(data.sprites.front_default);
-        let temp = [];
+        const temp = [];
         data.types.forEach((element) => {
           fetch(element.type.url).then((resType) =>
             resType.json().then((dataType) => {
-              temp.push(
-                dataType.sprites["generation-ix"]["scarlet-violet"].name_icon
-              );
+              temp.push({
+                name: dataType.name,
+                sprite:
+                  dataType.sprites["generation-ix"]["scarlet-violet"].name_icon,
+              });
             })
           );
         });
@@ -34,18 +36,7 @@ export const Pokemon = function (num) {
   }
 
   //Die erhaltenen Daten werden als Komponenten zurückgegeben
-  return (
-    <>
-      <div className="id">{id}</div>
-      <img className="sprite" src={sprite}></img>
-      <div className="name">{capitalize(species)}</div>
-      <ul className="typeContainer">
-        {types.map((type, i) => (
-          <img key={i} className="type" src={type}></img>
-        ))}
-      </ul>
-    </>
-  );
+  return { id: id, sprite: sprite, species: species, types: types };
 };
 
 //Funktion die den Wortanfang großschreibt
