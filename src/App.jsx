@@ -1,21 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import { Pokemon } from "./Pokemon.jsx";
+
+const typeList = loadTypes();
+const activeFilters = [];
+let pokemonToDisplay = [];
 
 export default function App() {
   //Alle Gen-1 Pokemon werden geladen
   const pokemonList = [];
-  const types = fetchTypes();
-  let pokemonToDisplay = [];
 
   for (let i = 1; i <= 151; i++) {
     pokemonList.push(Pokemon(i));
   }
 
   //Wenn es Filter gäbe, würde hier aussortiert werden; dann bräuchte es auch noch einen Button, der 'pokemonToDisplay' neu rendert
-  pokemonList.forEach((pokemon) => {
-    pokemonToDisplay.push(pokemon);
-  });
+  pokemonToDisplay = filterPokemon(pokemonList);
 
   //Die darzustellenden Pokemon werden gelistet
   const listItems = pokemonToDisplay.map((pokemon, i) => (
@@ -31,7 +31,7 @@ export default function App() {
       <div className="mainWindow">{listItems}</div>
       <div className="filterWindow">
         <h3>Filters</h3>
-        <div className="filters">{filters(types)}</div>
+        <div className="filters">{createfilters(typeList, pokemonList)}</div>
       </div>
     </>
   );
@@ -45,40 +45,76 @@ function displayPokemon(pokemon) {
       <div className="name">{pokemon.species}</div>
       <ul className="typeContainer">
         {pokemon.types.map((type, i) => (
-          <img key={i} className="type" src={type.sprite}></img>
+          <img key={i} className="type" src={typeList.get(type)}></img>
         ))}
       </ul>
     </>
   );
 }
 
-function fetchTypes() {
-  const types = [];
+function loadTypes() {
+  const types = new Map();
 
   fetch("https://pokeapi.co/api/v2/type").then((res) =>
     res.json().then((data) => {
-      data.results.forEach((type) => {
-        fetch(type.url).then((resType) =>
+      for (let i = 0; i < 18; i++) {
+        fetch(data.results[i].url).then((resType) =>
           resType.json().then((dataType) => {
-            types.push({
-              name: type.name,
-              sprite:
-                dataType.sprites["generation-ix"]["scarlet-violet"].name_icon,
-            });
+            types.set(
+              data.results[i].name,
+              dataType.sprites["generation-ix"]["scarlet-violet"].name_icon
+            );
           })
         );
-      });
+      }
     })
   );
 
   return types;
 }
 
-function filters(types) {
-  return types.map((type, i) => {
-    <div key={i} className="filter">
-      <div>{type.name}</div>
-      <img src={type.sprite}></img>
-    </div>;
+function filterPokemon(pokemonList) {
+  const filteredPokemon = [];
+  if (activeFilters.length != 0) {
+    pokemonList.forEach((pokemon) => {
+      pokemon.types.forEach((type) => {
+        if (
+          activeFilters.includes(type) &&
+          !filteredPokemon.includes(pokemon)
+        ) {
+          filteredPokemon.push(pokemon);
+        }
+      });
+    });
+  } else {
+    pokemonList.forEach((pokemon) => {
+      filteredPokemon.push(pokemon);
+    });
+  }
+
+  return filteredPokemon;
+}
+
+function createfilters(typeList, pokemonList) {
+  return Array.from(typeList.keys()).map((type, i) => {
+    return (
+      <div key={i} className="filter">
+        <img className="filterSprite" src={typeList.get(type)}></img>
+        <input
+          className="filterCheck"
+          type="checkbox"
+          id={type}
+          onChange={(event) => {
+            if (event.target.checked) {
+              activeFilters.push(event.target.id);
+            } else {
+              activeFilters.splice(activeFilters.indexOf(event.target.id), 1);
+            }
+
+            pokemonToDisplay = filterPokemon(pokemonList);
+          }}
+        />
+      </div>
+    );
   });
 }

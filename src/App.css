@@ -15,8 +15,8 @@
 }
 
 .filterWindow {
-  width: 500px;
-  height: 300px;
+  width: fit-content;
+  height: 199px;
   margin: auto;
   margin-top: 50px;
   display: flex;
@@ -27,10 +27,32 @@
 .filters {
   background-color: lightslategray;
   flex: 1;
+  overflow: hidden;
+  overflow-y: scroll;
 }
 
-.filter{
+.filter {
   display: flex;
+  margin: 10px;
+  height: 20px;
+}
+
+.filterName {
+  flex: 1;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.filterSprite {
+  margin-left: 5px;
+  margin-right: 5px;
+  height: 100%;
+  width: fit-content;
+}
+
+.filterCheck {
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 ul {
